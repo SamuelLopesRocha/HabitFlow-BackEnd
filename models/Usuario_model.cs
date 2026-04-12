@@ -40,7 +40,9 @@ public class Usuario
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public string RefreshToken { get; set; }
-    
-    public DateTime RefreshTokenExpiryTime { get; set; }
+    public string? CodigoConfirmacaoEmail { get; set; }
+
+    public DateTime? CodigoConfirmacaoExpira { get; set; }
+
+    public bool EmailConfirmado { get; set; } = false;
 }

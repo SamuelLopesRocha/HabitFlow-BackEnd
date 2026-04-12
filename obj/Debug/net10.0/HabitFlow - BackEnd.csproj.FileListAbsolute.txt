@@ -49,3 +49,7 @@ C:\Users\Familia Rocha\OneDrive\Anexos de email\Desktop\HabitFlow - BackEnd\obj\
 C:\Users\Familia Rocha\OneDrive\Anexos de email\Desktop\HabitFlow - BackEnd\obj\Debug\net10.0\HabitFlow - BackEnd.pdb
 C:\Users\Familia Rocha\OneDrive\Anexos de email\Desktop\HabitFlow - BackEnd\obj\Debug\net10.0\HabitFlow - BackEnd.genruntimeconfig.cache
 C:\Users\Familia Rocha\OneDrive\Anexos de email\Desktop\HabitFlow - BackEnd\obj\Debug\net10.0\ref\HabitFlow - BackEnd.dll
+C:\Users\Familia Rocha\OneDrive\Anexos de email\Desktop\HabitFlow - BackEnd\obj\Debug\net10.0\HabitFlow - BackEnd.sourcelink.json
+C:\Users\Familia Rocha\OneDrive\Anexos de email\Desktop\HabitFlow - BackEnd\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
+C:\Users\Familia Rocha\OneDrive\Anexos de email\Desktop\HabitFlow - BackEnd\bin\Debug\net10.0\MailKit.dll
+C:\Users\Familia Rocha\OneDrive\Anexos de email\Desktop\HabitFlow - BackEnd\bin\Debug\net10.0\MimeKit.dll
