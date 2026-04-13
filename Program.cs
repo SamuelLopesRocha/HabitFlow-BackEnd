@@ -1,18 +1,41 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔐 CHAVE JWT (pode ir pro appsettings depois)
-builder.Configuration["Jwt:Key"] = "9F8A7B6C5D4E3F2G1H0J9K8L7M6N5B4V3C2X1Z";
-// 🔥 Configuração do MongoDB
+// 🔐 CHAVE JWT
+var key = "9F8A7B6C5D4E3F2G1H0J9K8L7M6N5B4V3C2X1Z";
+builder.Configuration["Jwt:Key"] = key;
+
+// 🔥 MongoDB
 builder.Services.Configure<MongoDBSettings>(
     builder.Configuration.GetSection("MongoDB")
 );
-
-// 🔥 CONTEXTO
 builder.Services.AddSingleton<MongoDbContext>();
+
+// 🔐 CONFIGURAÇÃO DE AUTENTICAÇÃO JWT (ESSENCIAL)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(key)
+        )
+    };
+});
+
+// 🔥 AUTORIZAÇÃO
+builder.Services.AddAuthorization();
 
 // Controllers + Swagger
 builder.Services.AddControllers();
@@ -30,14 +53,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 🔥 ORDEM CORRETA DO PIPELINE
 app.UseRouting();
 
-// 🔐 MIDDLEWARE JWT (AQUI É O MAIS IMPORTANTE)
-app.UseMiddleware<AuthMiddleware>();
+// 🔐 ORDEM CORRETA (MUITO IMPORTANTE)
+app.UseAuthentication();   // 👈 ADICIONA ISSO
+app.UseAuthorization();    // 👈 DEPOIS DISSO
 
-// (opcional, mas pode deixar)
-app.UseAuthorization();
+// ⚠️ SEU MIDDLEWARE (opcional agora)
+app.UseMiddleware<AuthMiddleware>();
 
 app.MapControllers();
 

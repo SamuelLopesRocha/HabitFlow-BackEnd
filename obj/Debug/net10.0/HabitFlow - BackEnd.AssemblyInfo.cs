@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HabitFlow - BackEnd")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e896545eb9b49be3d7836493fcacb154948db46")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9ad71a6ce4b810ca1332b10f9fcc7451d883f78b")]
 [assembly: System.Reflection.AssemblyProductAttribute("HabitFlow - BackEnd")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HabitFlow - BackEnd")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
