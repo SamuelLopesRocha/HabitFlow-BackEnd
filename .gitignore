@@ -1,0 +1,16 @@
+# 🔐 Config sensível
+appsettings.json
+appsettings.Development.json
+
+# 🔐 Secrets do .NET
+secrets.json
+
+# Build
+bin/
+obj/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log

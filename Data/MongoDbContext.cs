@@ -17,7 +17,6 @@ public class MongoDbContext
     public IMongoCollection<Habito> Habitos =>
         _database.GetCollection<Habito>("Habitos");
 
-
     public IMongoCollection<HabitoRecorde> HabitoRecordes =>
         _database.GetCollection<HabitoRecorde>("HabitoRecordes");
 
