@@ -42,20 +42,33 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
 
 // Swagger
-    app.UseSwagger();
-    app.UseSwaggerUI();
-
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 app.UseRouting();
 
 // 🔐 ORDEM CORRETA (MUITO IMPORTANTE)
-app.UseAuthentication();   // 👈 ADICIONA ISSO
-app.UseAuthorization();    // 👈 DEPOIS DISSO
+app.UseAuthentication();   
+app.UseAuthorization();    
 
 // ⚠️ SEU MIDDLEWARE (opcional agora)
 app.UseMiddleware<AuthMiddleware>();
