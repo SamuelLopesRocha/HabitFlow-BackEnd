@@ -22,4 +22,10 @@ public class MongoDbContext
 
     public IMongoCollection<AgendaHabito> AgendaHabitos =>
         _database.GetCollection<AgendaHabito>("AgendaHabitos");
+
+    public IMongoCollection<Conquista> Conquistas =>
+        _database.GetCollection<Conquista>("Conquistas");
+
+    public IMongoCollection<UsuarioConquista> UsuarioConquistas =>
+        _database.GetCollection<UsuarioConquista>("UsuarioConquistas");
 }

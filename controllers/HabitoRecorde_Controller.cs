@@ -9,9 +9,12 @@ public class HabitoRecordeController : ControllerBase
 {
     private readonly MongoDbContext _context;
 
-    public HabitoRecordeController(MongoDbContext context)
+    private readonly ConquistaService _conquistaService;
+
+    public HabitoRecordeController(MongoDbContext context, ConquistaService conquistaService)
     {
         _context = context;
+        _conquistaService = conquistaService;
     }
 
     // =========================
@@ -138,6 +141,14 @@ public class HabitoRecordeController : ControllerBase
             .Set(h => h.MelhorStreak, melhorStreak);
 
         _context.Habitos.UpdateOne(h => h.Id == dto.HabitId, update);
+
+        // 🔥 DESBLOQUEIO DE CONQUISTAS
+        _conquistaService.VerificarConquistas(userId, dto.HabitId);
+        
+        if (dto.Concluido)
+        {
+            _conquistaService.VerificarConquistas(userId, dto.HabitId);
+        }
 
         return Created("", recorde);
     }
@@ -289,6 +300,8 @@ public class HabitoRecordeController : ControllerBase
             .Set(h => h.MelhorStreak, melhorStreak);
 
         _context.Habitos.UpdateOne(h => h.Id == registro.HabitId, update);
+
+        _conquistaService.VerificarConquistas(userId, registro.HabitId);
 
         return Ok(registro);
     }
