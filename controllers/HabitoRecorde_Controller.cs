@@ -112,7 +112,7 @@ public class HabitoRecordeController : ControllerBase
         var hoje = DateTime.UtcNow.Date;
 
         var jaExiste = _context.HabitoRecordes
-            .Find(r => r.HabitId == dto.HabitId && r.Data == hoje)
+            .Find(r => r.HabitId == dto.HabitId && r.Data.Date == hoje)
             .FirstOrDefault();
 
         if (jaExiste != null)
@@ -142,9 +142,6 @@ public class HabitoRecordeController : ControllerBase
 
         _context.Habitos.UpdateOne(h => h.Id == dto.HabitId, update);
 
-        // 🔥 DESBLOQUEIO DE CONQUISTAS
-        _conquistaService.VerificarConquistas(userId, dto.HabitId);
-        
         if (dto.Concluido)
         {
             _conquistaService.VerificarConquistas(userId, dto.HabitId);
@@ -200,19 +197,23 @@ public class HabitoRecordeController : ControllerBase
         if (habito == null)
             return NotFound();
 
-        var inicio = DateTime.UtcNow.Date.AddDays(-90);
+        var hoje = DateTime.UtcNow.Date;
+        var inicio = hoje.AddDays(-29);
 
         var registros = _context.HabitoRecordes
             .Find(r => r.HabitId == habitId && r.Data >= inicio)
             .ToList();
 
-        var resultado = Enumerable.Range(0, 90)
+        var registrosDict = registros
+            .GroupBy(r => r.Data.Date)
+            .ToDictionary(g => g.Key, g => g.First());
+
+        var resultado = Enumerable.Range(0, 30)
             .Select(i =>
             {
-                var dia = inicio.AddDays(i);
+                var dia = inicio.AddDays(i).Date;
 
-                var registro = registros
-                    .FirstOrDefault(r => r.Data.Date == dia);
+                registrosDict.TryGetValue(dia, out var registro);
 
                 return new
                 {
@@ -301,7 +302,10 @@ public class HabitoRecordeController : ControllerBase
 
         _context.Habitos.UpdateOne(h => h.Id == registro.HabitId, update);
 
-        _conquistaService.VerificarConquistas(userId, registro.HabitId);
+        if (registro.Concluido)
+        {
+            _conquistaService.VerificarConquistas(userId, registro.HabitId);
+        }
 
         return Ok(registro);
     }
