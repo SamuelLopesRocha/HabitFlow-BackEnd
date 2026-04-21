@@ -9,10 +9,12 @@ using System.Linq;
 public class HabitosController : ControllerBase
 {
     private readonly MongoDbContext _context;
+    private readonly NotificacaoService _notificacaoService;
 
-    public HabitosController(MongoDbContext context)
+    public HabitosController(MongoDbContext context, NotificacaoService notificacaoService)
     {
         _context = context;
+        _notificacaoService = notificacaoService;
     }
 
     // =========================
@@ -56,6 +58,12 @@ public class HabitosController : ControllerBase
         };
 
         _context.Habitos.InsertOne(habito);
+
+        _notificacaoService.NotificarCriacaoHabito(
+            userId,
+            habito.Nome,
+            habito.Id
+        );
 
         return Created("", habito);
     }
@@ -156,11 +164,23 @@ public class HabitosController : ControllerBase
         if (!Guid.TryParse(id, out var habitoId))
             return BadRequest();
 
-        var resultado = _context.Habitos
-            .DeleteOne(h => h.Id == habitoId && h.UserId == userId);
+        // 🔍 1. BUSCAR O HÁBITO
+        var habito = _context.Habitos
+            .Find(h => h.Id == habitoId && h.UserId == userId)
+            .FirstOrDefault();
 
-        if (resultado.DeletedCount == 0)
+        if (habito == null)
             return NotFound(new { mensagem = "Hábito não encontrado ❌" });
+
+        // 🗑️ 2. DELETAR
+        _context.Habitos.DeleteOne(h => h.Id == habitoId);
+
+        // 🔔 3. NOTIFICAR
+        _notificacaoService.NotificarHabitoRemovido(
+            userId,
+            habito.Nome,
+            habito.Id
+        );
 
         return Ok(new { mensagem = "Hábito removido com sucesso ✅" });
     }

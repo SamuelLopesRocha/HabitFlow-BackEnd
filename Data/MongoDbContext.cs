@@ -28,4 +28,7 @@ public class MongoDbContext
 
     public IMongoCollection<UsuarioConquista> UsuarioConquistas =>
         _database.GetCollection<UsuarioConquista>("UsuarioConquistas");
+
+    public IMongoCollection<Notificacao> Notificacoes =>
+        _database.GetCollection<Notificacao>("Notificacoes");
 }

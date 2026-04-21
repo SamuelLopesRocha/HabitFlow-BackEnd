@@ -3,10 +3,15 @@ using MongoDB.Driver;
 public class ConquistaService
 {
     private readonly MongoDbContext _context;
+    private readonly NotificacaoService _notificacaoService;
 
-    public ConquistaService(MongoDbContext context)
+    public ConquistaService(
+        MongoDbContext context,
+        NotificacaoService notificacaoService
+    )
     {
         _context = context;
+        _notificacaoService = notificacaoService;
     }
 
     public void VerificarConquistas(string userId, Guid habitId)
@@ -61,6 +66,13 @@ public class ConquistaService
             };
 
             _context.UsuarioConquistas.InsertOne(nova);
+
+            // 🔔 NOTIFICAÇÃO DE CONQUISTA
+            _notificacaoService.NotificarConquista(
+                userId,
+                conquista.Nome,
+                conquista.Id
+            );
         }
     }
 

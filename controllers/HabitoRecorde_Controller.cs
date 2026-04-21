@@ -8,13 +8,19 @@ using MongoDB.Driver;
 public class HabitoRecordeController : ControllerBase
 {
     private readonly MongoDbContext _context;
-
     private readonly ConquistaService _conquistaService;
+    private readonly NotificacaoService _notificacaoService;
 
-    public HabitoRecordeController(MongoDbContext context, ConquistaService conquistaService)
+    public HabitoRecordeController(
+        MongoDbContext context, 
+        ConquistaService conquistaService,
+        NotificacaoService notificacaoService
+    )
     {
         _context = context;
         _conquistaService = conquistaService;
+        _notificacaoService = notificacaoService;
+
     }
 
     // =========================
@@ -111,8 +117,11 @@ public class HabitoRecordeController : ControllerBase
 
         var hoje = DateTime.UtcNow.Date;
 
+        var inicio = hoje;
+        var fim = hoje.AddDays(1);
+
         var jaExiste = _context.HabitoRecordes
-            .Find(r => r.HabitId == dto.HabitId && r.Data.Date == hoje)
+            .Find(r => r.HabitId == dto.HabitId && r.Data >= inicio && r.Data < fim)
             .FirstOrDefault();
 
         if (jaExiste != null)
@@ -144,6 +153,14 @@ public class HabitoRecordeController : ControllerBase
 
         if (dto.Concluido)
         {
+            // 🔔 NOTIFICAÇÃO DE HÁBITO CONCLUÍDO
+            _notificacaoService.NotificarHabitoConcluido(
+                userId,
+                habito.Nome,
+                habito.Id
+            );
+
+            // 🏆 CONQUISTAS
             _conquistaService.VerificarConquistas(userId, dto.HabitId);
         }
 
@@ -277,6 +294,8 @@ public class HabitoRecordeController : ControllerBase
         if (registro == null)
             return NotFound(new { mensagem = "Registro não encontrado ❌" });
 
+        var jaEraConcluido = registro.Concluido;
+
         var habito = _context.Habitos
             .Find(h => h.Id == registro.HabitId && h.UserId == userId)
             .FirstOrDefault();
@@ -302,8 +321,14 @@ public class HabitoRecordeController : ControllerBase
 
         _context.Habitos.UpdateOne(h => h.Id == registro.HabitId, update);
 
-        if (registro.Concluido)
+        if (!jaEraConcluido && registro.Concluido)
         {
+            _notificacaoService.NotificarHabitoConcluido(
+                userId,
+                habito.Nome,
+                habito.Id
+            );
+
             _conquistaService.VerificarConquistas(userId, registro.HabitId);
         }
 
@@ -338,7 +363,7 @@ public class HabitoRecordeController : ControllerBase
         if (habito == null)
             return Forbid();
 
-        _context.HabitoRecordes.DeleteOne(r => r.Id == id);
+        _context.HabitoRecordes.DeleteOne(r => r.Id == id && r.HabitId == habito.Id);
 
         // 🔥 ADICIONADO
         var (streakAtual, melhorStreak) = CalcularStreak(registro.HabitId);

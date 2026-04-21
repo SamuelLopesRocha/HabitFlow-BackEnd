@@ -41,7 +41,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ConquistaService>();
+builder.Services.AddScoped<ConquistaService>();
+builder.Services.AddScoped<NotificacaoService>();
 
 builder.Services.AddCors(options =>
 {
