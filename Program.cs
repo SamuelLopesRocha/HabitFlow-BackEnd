@@ -43,6 +43,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ConquistaService>();
 builder.Services.AddScoped<NotificacaoService>();
+builder.Services.AddScoped<ChatService>();
 
 builder.Services.AddCors(options =>
 {

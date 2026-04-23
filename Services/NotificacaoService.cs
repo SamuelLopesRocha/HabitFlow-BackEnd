@@ -56,33 +56,6 @@ public class NotificacaoService
     }
 
     // =========================
-    // 🔥 STREAK
-    // =========================
-    public void NotificarStreak(string usuarioId, int dias)
-    {
-        Criar(
-            usuarioId,
-            "Sequência mantida 🔥",
-            $"Você está há {dias} dias consecutivos!",
-            TipoNotificacao.Sequencia
-        );
-    }
-
-    // =========================
-    // ⏰ LEMBRETE
-    // =========================
-    public void NotificarLembrete(string usuarioId, string nomeHabito, Guid habitId)
-    {
-        Criar(
-            usuarioId,
-            "Hora do hábito ⏰",
-            $"Não esqueça de: {nomeHabito}",
-            TipoNotificacao.Lembrete,
-            habitId
-        );
-    }
-
-    // =========================
     // 👥 GRUPO (FUTURO)
     // =========================
     public void NotificarEntradaGrupo(string usuarioId, string nomeUsuario, string nomeGrupo)
@@ -123,20 +96,6 @@ public class NotificacaoService
     }
 
     // =========================
-    // 🗑️ REGISTRO DELETADO
-    // =========================
-    public void NotificarRegistroDeletado(string usuarioId, string nomeHabito, Guid habitoId)
-    {
-        Criar(
-            usuarioId,
-            "Progresso removido ⚠️",
-            $"Você removeu um registro do hábito: {nomeHabito}",
-            TipoNotificacao.Sistema,
-            habitoId
-        );
-    }
-
-    // =========================
     // 🗑️ HÁBITO REMOVIDO
     // =========================
     public void NotificarHabitoRemovido(string usuarioId, string nomeHabito, Guid habitoId)
@@ -147,6 +106,19 @@ public class NotificacaoService
             $"Você removeu o hábito: {nomeHabito}",
             TipoNotificacao.Sistema,
             habitoId
+        );
+    }
+
+    // =========================
+    // 🗑️ ENTRADA CHAT
+    // =========================    
+    public void NotificarEntradaChat(string usuarioId, string nomeUsuario, string nomeChat)
+    {
+        Criar(
+            usuarioId,
+            "Novo participante no chat 👥",
+            $"{nomeUsuario} entrou no chat {nomeChat}",
+            TipoNotificacao.Sistema
         );
     }
 }

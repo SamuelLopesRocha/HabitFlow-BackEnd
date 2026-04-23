@@ -9,6 +9,18 @@ public class MongoDbContext
     {
         var client = new MongoClient(settings.Value.ConnectionString);
         _database = client.GetDatabase(settings.Value.DatabaseName);
+
+        // 🔥 CRIAR INDEX ÚNICO PARA USERNAME
+        var indexKeys = Builders<Usuario>.IndexKeys.Ascending(u => u.Username);
+        var indexOptions = new CreateIndexOptions
+        {
+            Unique = true,
+            Collation = new Collation("en", strength: CollationStrength.Secondary)
+        };
+
+        Usuarios.Indexes.CreateOne(
+            new CreateIndexModel<Usuario>(indexKeys, indexOptions)
+        );
     }
 
     public IMongoCollection<Usuario> Usuarios =>
@@ -31,4 +43,7 @@ public class MongoDbContext
 
     public IMongoCollection<Notificacao> Notificacoes =>
         _database.GetCollection<Notificacao>("Notificacoes");
+
+    public IMongoCollection<Chat> Chats =>
+        _database.GetCollection<Chat>("Chats");
 }

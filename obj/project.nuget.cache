@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "UaJzguqLtqw=",
+  "dgSpecHash": "wmSHUNJZ+O8=",
   "success": true,
   "projectFilePath": "C:\\Users\\Familia Rocha\\OneDrive\\Anexos de email\\Desktop\\HabitFlow - BackEnd\\HabitFlow.BackEnd.csproj",
   "expectedPackageFiles": [
@@ -48,5 +48,18 @@
     "C:\\Users\\Familia Rocha\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.26\\microsoft.aspnetcore.app.ref.8.0.26.nupkg.sha512",
     "C:\\Users\\Familia Rocha\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.26\\microsoft.netcore.app.host.win-x64.8.0.26.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "O pacote 'MailKit' 4.15.1 tem uma moderado vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-9j88-vvj5-vhgr",
+      "projectPath": "C:\\Users\\Familia Rocha\\OneDrive\\Anexos de email\\Desktop\\HabitFlow - BackEnd\\HabitFlow.BackEnd.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Familia Rocha\\OneDrive\\Anexos de email\\Desktop\\HabitFlow - BackEnd\\HabitFlow.BackEnd.csproj",
+      "libraryId": "MailKit",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }
