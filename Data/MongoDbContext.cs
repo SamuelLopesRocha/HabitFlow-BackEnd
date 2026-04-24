@@ -46,4 +46,7 @@ public class MongoDbContext
 
     public IMongoCollection<Chat> Chats =>
         _database.GetCollection<Chat>("Chats");
+
+    public IMongoCollection<Mensagem> Mensagens =>
+        _database.GetCollection<Mensagem>("Mensagens");
 }

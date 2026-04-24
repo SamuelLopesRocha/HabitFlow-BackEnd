@@ -44,8 +44,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ConquistaService>();
 builder.Services.AddScoped<NotificacaoService>();
 builder.Services.AddScoped<ChatService>();
-
+builder.Services.AddScoped<MensagemService>();
+builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
+
+
 {
     options.AddPolicy("AllowAll",
         policy =>
@@ -72,7 +75,7 @@ app.UseRouting();
 // 🔐 ORDEM CORRETA (MUITO IMPORTANTE)
 app.UseAuthentication();   
 app.UseAuthorization();    
-
+app.MapHub<ChatHub>("/chatHub");
 // ⚠️ SEU MIDDLEWARE (opcional agora)
 app.UseMiddleware<AuthMiddleware>();
 
