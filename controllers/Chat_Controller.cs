@@ -51,4 +51,42 @@ public class ChatController : ControllerBase
 
         return Ok(chats);
     }
+
+    [HttpPost("{chatId}/sair")]
+    public IActionResult SairDoChat(Guid chatId)
+    {
+        var userId = User.FindFirst("id")?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        try
+        {
+            _chatService.SairDoChat(chatId, userId);
+            return Ok("Você saiu do chat");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("{chatId}")]
+    public IActionResult DeletarChat(Guid chatId)
+    {
+        var userId = User.FindFirst("id")?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        try
+        {
+            _chatService.DeletarChat(chatId, userId);
+            return Ok("Chat deletado com sucesso");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
