@@ -11,6 +11,9 @@ public class HabitoRecorde
     [BsonRepresentation(BsonType.String)]
     public Guid HabitId { get; set; } // FK do hábito
 
+    [BsonElement("usuarioId")] // 🔥 CORREÇÃO
+    public string UserId { get; set; }
+
     [BsonElement("data")]
     public DateTime Data { get; set; } // DateOnly adaptado para Mongo
 

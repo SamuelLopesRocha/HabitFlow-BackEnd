@@ -34,10 +34,12 @@ public class HabitoRecordeController : ControllerBase
     // =========================
     // 🔥 FUNÇÃO STREAK (ADICIONADO)
     // =========================
-    private (int streakAtual, int melhorStreak) CalcularStreak(Guid habitId)
+    private (int streakAtual, int melhorStreak) CalcularStreak(Guid habitId, string userId)
     {
         var registros = _context.HabitoRecordes
-            .Find(r => r.HabitId == habitId && r.Concluido == true)
+            .Find(r => r.HabitId == habitId 
+                    && r.UserId == userId
+                    && r.Concluido == true)
             .SortByDescending(r => r.Data)
             .ToList();
 
@@ -79,7 +81,7 @@ public class HabitoRecordeController : ControllerBase
 
         streakAtual = 0;
 
-        while (dias.Contains(hoje.Date))
+        while (dias.Contains(hoje))
         {
             streakAtual++;
             hoje = hoje.AddDays(-1);
@@ -109,19 +111,44 @@ public class HabitoRecordeController : ControllerBase
             return BadRequest(new { mensagem = "Quantidade não pode ser negativa ❌" });
 
         var habito = _context.Habitos
-            .Find(h => h.Id == dto.HabitId && h.UserId == userId)
+            .Find(h => h.Id == dto.HabitId)
             .FirstOrDefault();
 
         if (habito == null)
             return NotFound(new { mensagem = "Hábito não encontrado ❌" });
 
+        // 🔥 verifica se é compartilhado
+        var habitoCompartilhado = _context.HabitosCompartilhados
+            .Find(h => h.HabitId == dto.HabitId)
+            .FirstOrDefault();
+
+        if (habitoCompartilhado != null)
+        {
+            // 🔹 precisa participar
+            var participa = _context.ParticipantesHabitoCompartilhado
+                .Find(p => p.HabitoCompartilhadoId == habitoCompartilhado.Id &&
+                        p.UsuarioId == userId)
+                .Any();
+
+            if (!participa)
+                return Forbid();
+        }
+        else
+        {
+            // 🔹 hábito normal → precisa ser dono
+            if (habito.UserId != userId)
+                return Forbid();
+        }
         var hoje = DateTime.UtcNow.Date;
 
         var inicio = hoje;
         var fim = hoje.AddDays(1);
 
         var jaExiste = _context.HabitoRecordes
-            .Find(r => r.HabitId == dto.HabitId && r.Data >= inicio && r.Data < fim)
+            .Find(r => r.HabitId == dto.HabitId 
+                    && r.UserId == userId // 🔥 ESSENCIAL
+                    && r.Data >= inicio 
+                    && r.Data < fim)
             .FirstOrDefault();
 
         if (jaExiste != null)
@@ -133,6 +160,7 @@ public class HabitoRecordeController : ControllerBase
         var recorde = new HabitoRecorde
         {
             HabitId = dto.HabitId,
+            UserId = userId, // 🔥 FALTAVA ISSO
             Data = hoje,
             Quantidade = dto.Quantidade,
             Concluido = dto.Concluido,
@@ -143,7 +171,7 @@ public class HabitoRecordeController : ControllerBase
         _context.HabitoRecordes.InsertOne(recorde);
 
         // 🔥 ADICIONADO (USANDO FUNÇÃO)
-        var (streakAtual, melhorStreak) = CalcularStreak(dto.HabitId);
+        var (streakAtual, melhorStreak) = CalcularStreak(dto.HabitId, userId);
 
         var update = Builders<Habito>.Update
             .Set(h => h.StreakAtual, streakAtual)
@@ -189,7 +217,7 @@ public class HabitoRecordeController : ControllerBase
             return NotFound(new { mensagem = "Hábito não encontrado ❌" });
 
         var registros = _context.HabitoRecordes
-            .Find(r => r.HabitId == habitId)
+            .Find(r => r.HabitId == habitId && r.UserId == userId)
             .SortByDescending(r => r.Data)
             .ToList();
 
@@ -218,7 +246,9 @@ public class HabitoRecordeController : ControllerBase
         var inicio = hoje.AddDays(-29);
 
         var registros = _context.HabitoRecordes
-            .Find(r => r.HabitId == habitId && r.Data >= inicio)
+            .Find(r => r.HabitId == habitId 
+                && r.UserId == userId 
+                && r.Data >= inicio)
             .ToList();
 
         var registrosDict = registros
@@ -257,7 +287,7 @@ public class HabitoRecordeController : ControllerBase
             return BadRequest(new { mensagem = "ID inválido ❌" });
 
         var registro = _context.HabitoRecordes
-            .Find(r => r.Id == id)
+            .Find(r => r.Id == id && r.UserId == userId)
             .FirstOrDefault();
 
         if (registro == null)
@@ -313,7 +343,7 @@ public class HabitoRecordeController : ControllerBase
         _context.HabitoRecordes.ReplaceOne(r => r.Id == id, registro);
 
         // 🔥 ADICIONADO
-        var (streakAtual, melhorStreak) = CalcularStreak(registro.HabitId);
+        var (streakAtual, melhorStreak) = CalcularStreak(registro.HabitId, userId);
 
         var update = Builders<Habito>.Update
             .Set(h => h.StreakAtual, streakAtual)
@@ -366,7 +396,7 @@ public class HabitoRecordeController : ControllerBase
         _context.HabitoRecordes.DeleteOne(r => r.Id == id && r.HabitId == habito.Id);
 
         // 🔥 ADICIONADO
-        var (streakAtual, melhorStreak) = CalcularStreak(registro.HabitId);
+        var (streakAtual, melhorStreak) = CalcularStreak(registro.HabitId, userId);
 
         var update = Builders<Habito>.Update
             .Set(h => h.StreakAtual, streakAtual)

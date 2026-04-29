@@ -49,4 +49,13 @@ public class MongoDbContext
 
     public IMongoCollection<Mensagem> Mensagens =>
         _database.GetCollection<Mensagem>("Mensagens");
+
+    public IMongoCollection<HabitoCompartilhado> HabitosCompartilhados =>
+        _database.GetCollection<HabitoCompartilhado>("HabitosCompartilhados");
+
+    public IMongoCollection<ParticipanteHabitoCompartilhado> ParticipantesHabitoCompartilhado =>
+        _database.GetCollection<ParticipanteHabitoCompartilhado>("ParticipantesHabitoCompartilhado");
+
+    public IMongoCollection<ConviteHabitoCompartilhado> ConvitesHabitoCompartilhado =>
+        _database.GetCollection<ConviteHabitoCompartilhado>("ConvitesHabitoCompartilhado");
 }

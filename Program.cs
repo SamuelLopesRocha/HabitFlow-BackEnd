@@ -48,7 +48,6 @@ builder.Services.AddScoped<MensagemService>();
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 
-
 {
     options.AddPolicy("AllowAll",
         policy =>
