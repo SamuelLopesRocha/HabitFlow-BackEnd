@@ -58,4 +58,7 @@ public class MongoDbContext
 
     public IMongoCollection<ConviteHabitoCompartilhado> ConvitesHabitoCompartilhado =>
         _database.GetCollection<ConviteHabitoCompartilhado>("ConvitesHabitoCompartilhado");
-}
+
+    public IMongoCollection<Amizade> Amizades =>
+        _database.GetCollection<Amizade>("Amizades");
+}   
