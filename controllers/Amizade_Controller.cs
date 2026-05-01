@@ -9,14 +9,17 @@ public class AmizadeController : ControllerBase
 {
     private readonly MongoDbContext _context;
     private readonly NotificacaoService _notificacaoService;
+    private readonly ChatService _chatService;
 
     public AmizadeController(
         MongoDbContext context,
-        NotificacaoService notificacaoService
+        NotificacaoService notificacaoService,
+        ChatService chatService
     )
     {
         _context = context;
         _notificacaoService = notificacaoService;
+        _chatService = chatService;
     }
 
     private string? GetUserId()
@@ -111,6 +114,42 @@ public class AmizadeController : ControllerBase
         amizade.Status = dto.Aceitar
             ? StatusAmizade.Aceito
             : StatusAmizade.Recusado;
+
+        if (dto.Aceitar)
+        {
+            // 🔍 converter ID → Username
+            var usuario1 = _context.Usuarios
+                .Find(u => u.Id == amizade.UsuarioId)
+                .FirstOrDefault();
+
+            var usuario2 = _context.Usuarios
+                .Find(u => u.Id == amizade.AmigoId)
+                .FirstOrDefault();
+
+            if (usuario1 == null || usuario2 == null)
+                return BadRequest("Erro ao criar chat");
+
+            // 🔥 evitar duplicar chat
+            var chatExistente = _chatService.ExisteChatPrivado(
+                amizade.UsuarioId,
+                amizade.AmigoId
+            );
+
+            if (!chatExistente)
+            {
+                var dtoChat = new CreateChatDTO
+                {
+                    Tipo = TipoChat.Privado,
+                    Usernames = new List<string>
+                    {
+                        usuario1.Username,
+                        usuario2.Username
+                    }
+                };
+
+                _chatService.Criar(dtoChat, amizade.UsuarioId);
+            }
+        }
 
         amizade.DataResposta = DateTime.UtcNow;
         amizade.RespondidoPorId = userId;

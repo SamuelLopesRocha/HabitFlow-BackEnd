@@ -24,7 +24,7 @@ public class ChatController : ControllerBase
 
         // pegar userId do token (igual vc já usa)
         var userId = User.FindFirst("id")?.Value;
-
+        
         if (string.IsNullOrEmpty(userId))
             return Unauthorized();
 

@@ -172,4 +172,13 @@ public class ChatService
 
         _context.Chats.DeleteOne(c => c.Id == chatId);
     }
+    public bool ExisteChatPrivado(string user1, string user2)
+    {
+        return _context.Chats.Find(c =>
+            c.Tipo == TipoChat.Privado &&
+            c.Participantes.Contains(user1) &&
+            c.Participantes.Contains(user2) &&
+            c.Participantes.Count == 2
+        ).Any();
+    }
 }
