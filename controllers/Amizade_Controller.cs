@@ -210,12 +210,32 @@ public class AmizadeController : ControllerBase
     {
         var userId = GetUserId();
 
-        var amigos = _context.Amizades
+        var amizades = _context.Amizades
             .Find(a =>
                 (a.UsuarioId == userId || a.AmigoId == userId) &&
                 a.Status == StatusAmizade.Aceito
             )
             .ToList();
+
+        var amigos = amizades.Select(a =>
+        {
+            var amigoId = a.UsuarioId == userId
+                ? a.AmigoId
+                : a.UsuarioId;
+
+            var usuario = _context.Usuarios
+                .Find(u => u.Id == amigoId)
+                .FirstOrDefault();
+
+            return new AmigoDTO
+            {
+                Id = a.Id,
+                UsuarioId = usuario?.Id,
+                Username = usuario?.Username,
+                Nome = usuario?.Nome,
+                Status = a.Status.ToString()
+            };
+        });
 
         return Ok(amigos);
     }
@@ -228,12 +248,28 @@ public class AmizadeController : ControllerBase
     {
         var userId = GetUserId();
 
-        var pendentes = _context.Amizades
+        var amizades = _context.Amizades
             .Find(a =>
                 a.AmigoId == userId &&
                 a.Status == StatusAmizade.Pendente
             )
             .ToList();
+
+        var pendentes = amizades.Select(a =>
+        {
+            var usuario = _context.Usuarios
+                .Find(u => u.Id == a.UsuarioId)
+                .FirstOrDefault();
+
+            return new AmigoDTO
+            {
+                Id = a.Id,
+                UsuarioId = usuario?.Id,
+                Username = usuario?.Username,
+                Nome = usuario?.Nome,
+                Status = a.Status.ToString()
+            };
+        });
 
         return Ok(pendentes);
     }
@@ -246,12 +282,28 @@ public class AmizadeController : ControllerBase
     {
         var userId = GetUserId();
 
-        var enviados = _context.Amizades
+        var amizades = _context.Amizades
             .Find(a =>
                 a.UsuarioId == userId &&
                 a.Status == StatusAmizade.Pendente
             )
             .ToList();
+
+        var enviados = amizades.Select(a =>
+        {
+            var usuario = _context.Usuarios
+                .Find(u => u.Id == a.AmigoId)
+                .FirstOrDefault();
+
+            return new AmigoDTO
+            {
+                Id = a.Id,
+                UsuarioId = usuario?.Id,
+                Username = usuario?.Username,
+                Nome = usuario?.Nome,
+                Status = a.Status.ToString()
+            };
+        });
 
         return Ok(enviados);
     }
