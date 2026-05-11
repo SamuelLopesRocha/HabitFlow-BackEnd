@@ -32,9 +32,6 @@ public class MongoDbContext
     public IMongoCollection<HabitoRecorde> HabitoRecordes =>
         _database.GetCollection<HabitoRecorde>("HabitoRecordes");
 
-    public IMongoCollection<AgendaHabito> AgendaHabitos =>
-        _database.GetCollection<AgendaHabito>("AgendaHabitos");
-
     public IMongoCollection<Conquista> Conquistas =>
         _database.GetCollection<Conquista>("Conquistas");
 
