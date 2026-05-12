@@ -214,4 +214,22 @@ public class UsuarioController : ControllerBase
             ToDTO(usuario)
         ));
     }
+
+    // 🔐 GET: api/usuario/{username}/perfil
+    [HttpGet("{username}/perfil")]
+    public IActionResult GetPerfil(string username)
+    {
+        var usuario = _context.Usuarios.Find(u => u.Username == username).FirstOrDefault();
+
+        if (usuario == null)
+        {
+            return NotFound(new ApiResponse<object>(false, "Usuário não encontrado", null));
+        }
+
+        return Ok(new ApiResponse<object>(
+            true,
+            "Perfil do usuário encontrado",
+            ToDTO(usuario)
+        ));
+    }
 }
