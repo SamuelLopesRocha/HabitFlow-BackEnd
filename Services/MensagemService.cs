@@ -62,4 +62,12 @@ public class MensagemService
 
         return mensagem;
     }
+
+    public List<Mensagem> BuscarPorChat(Guid chatId)
+    {
+        return _context.Mensagens
+            .Find(m => m.ChatId == chatId)
+            .SortBy(m => m.CriadoEm)
+            .ToList();
+    }
 }

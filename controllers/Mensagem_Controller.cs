@@ -31,4 +31,20 @@ public class MensagemController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    // 🔥 ADICIONA ISSO
+    [HttpGet("{chatId}")]
+    public IActionResult BuscarMensagens(Guid chatId)
+    {
+        try
+        {
+            var mensagens = _mensagemService.BuscarPorChat(chatId);
+
+            return Ok(mensagens);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
