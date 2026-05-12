@@ -93,11 +93,35 @@ public class ChatService
         return chat;
     }
 
-    public List<Chat> BuscarPorUsuario(string userId)
+    public List<object> BuscarPorUsuario(string userId)
     {
-        return _context.Chats
-            .Find(c => c.Participantes.Contains(userId)) // ✅ corrigido
+        var chats = _context.Chats
+            .Find(c => c.Participantes.Contains(userId))
             .ToList();
+
+        var resultado = chats.Select(chat =>
+        {
+            var usuarios = _context.Usuarios
+                .Find(u => chat.Participantes.Contains(u.Id))
+                .ToList()
+                .Select(u => new
+                {
+                    id = u.Id,
+                    nome = u.Nome,
+                    username = u.Username
+                });
+
+            return new
+            {
+                id = chat.Id,
+                nome = chat.Nome,
+                tipo = chat.Tipo,
+                criadoEm = chat.CriadoEm,
+                usuarios = usuarios
+            };
+        });
+
+        return resultado.Cast<object>().ToList();
     }
 
     // =========================
