@@ -7,10 +7,12 @@ using MongoDB.Driver;
 public class MensagemController : ControllerBase
 {
     private readonly MensagemService _mensagemService;
+    private readonly MongoDbContext _context;
 
-    public MensagemController(MensagemService mensagemService)
+    public MensagemController(MensagemService mensagemService, MongoDbContext context)
     {
         _mensagemService = mensagemService;
+        _context = context;
     }
 
     [HttpPost("{chatId}")]
@@ -40,7 +42,26 @@ public class MensagemController : ControllerBase
         {
             var mensagens = _mensagemService.BuscarPorChat(chatId);
 
-            return Ok(mensagens);
+            var response = mensagens.Select(m =>
+            {
+                var usuario = _context.Usuarios
+                    .Find(u => u.Id == m.UsuarioId)
+                    .FirstOrDefault();
+
+                return new MensagemResponseDTO
+                {
+                    Id = m.Id,
+                    ChatId = m.ChatId,
+                    UsuarioId = m.UsuarioId,
+                    Username = usuario?.Username,
+                    Conteudo = m.Conteudo,
+                    Tipo = m.Tipo,
+                    Lida = m.Lida,
+                    CriadoEm = m.CriadoEm
+                };
+            });
+
+            return Ok(response);
         }
         catch (Exception ex)
         {
